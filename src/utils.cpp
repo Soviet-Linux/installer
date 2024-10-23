@@ -126,7 +126,10 @@ std::vector<std::string> readLocaleGenFile(const std::string& filePath) {
     }
 
     while (std::getline(file, line)) {
-        if (!line.empty() && line[0] == '#' && line.length() > 1 && line[1] != ' ') {
+        if (!line.empty() && line[0] == '#') {
+            line.erase(0, 1);
+        }
+        if (!line.empty()) {
             lines.push_back(line);
         }
     }
