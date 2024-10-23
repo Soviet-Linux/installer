@@ -35,35 +35,37 @@ int create_root(const std::string& target_drive) {
     return std::system(("mkfs.btrfs -L sovietlinux /dev/" + target_drive + "2").c_str());
 }
 
-int mount_root() {
-    const char* source = "LABEL=sovietlinux";
-    const char* target = "/mnt";
+int mount_root(std::string target) {
+    std::string source_str = "/dev/" + target + "2";
+    const char* source = source_str.c_str();
+    const char* mount_point = "/mnt";
     const char* filesystemtype = "btrfs";
     const char* options = "compress=zstd:3";
 
-    if (mount(source, target, filesystemtype, 0, options) != 0) {
+    if (mount(source, mount_point, filesystemtype, 0, options) != 0) {
         std::cerr << "Failed to mount: " << std::strerror(errno) << std::endl;
         return -1;
     }
 
-    std::cout << "Successfully mounted " << source << " at " << target
+    std::cout << "Successfully mounted " << source << " at " << mount_point
               << " with options: " << options << std::endl;
 
     return 0;
 }
 
-int mount_boot() {
-    const char* source = "LABEL=SOVIET-EFI";
-    const char* target = "/mnt/efi";
+int mount_boot(std::string target) {
+    std::string source_str = "/dev/" + target + "1";
+    const char* source = source_str.c_str();
+    const char* mount_point = "/mnt/efi";
     const char* filesystemtype = "vfat";
     const char* options = "defaults";
 
-    if (mount(source, target, filesystemtype, 0, options) != 0) {
+    if (mount(source, mount_point, filesystemtype, 0, options) != 0) {
         std::cerr << "Failed to mount: " << std::strerror(errno) << std::endl;
         return -1;
     }
 
-    std::cout << "Successfully mounted " << source << " at " << target
+    std::cout << "Successfully mounted " << source << " at " << mount_point
               << " with options: " << options << std::endl;
 
     return 0;
@@ -79,8 +81,8 @@ void install_soviet(const std::string& target_drive,
     partition_drive(target_drive);
     create_boot(target_drive);
     create_root(target_drive);
-    mount_root();
-    mount_boot();
+    mount_root(target_drive);
+    mount_boot(target_drive);
     copyFiles("/run/rootfsbase/", "/mnt");
     deleteFilesInDir("/mnt/efi/EFI/Linux/");
     setupSystemd();
