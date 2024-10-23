@@ -6,7 +6,7 @@
 
 int execInChroot(const std::string& command) {
     std::cout << "Executing in chroot: " << command << std::endl;
-    std::string fullCommand = "systemd-nspawn -bD /mnt bash -c \"" + command + "\"";
+    std::string fullCommand = "chroot /mnt bash -c \"" + command + "\"";
 
     std::array<char, 128> buffer;
     std::string result;
@@ -142,10 +142,10 @@ void install_soviet(const std::string& target_drive,
 
     if (setupSystemd() != 0) return;
 
-    if (execInChroot("localectl set-keymap --no-convert " + keymap) != 0) return;
-    if (execInChroot("localectl set-locale LANG=" + locale) != 0) return;
+    if (execInChroot("echo 'KEYMAP=" + keymap + " > /etc/vconsole.conf") != 0) return;
+    if (execInChroot("echo 'LANG="+ locale + "' > /etc/locale.conf && locale-gen") != 0) return;
     if (setRootPassword(rootPassword) != 0) return;
-    if (execInChroot("hostnamectl set-hostname " + hostname) != 0) return;
+    if (execInChroot("echo "+ hostname +" > /etc/hostname") != 0) return;
     if (execInChroot("systemd-machine-id-setup") != 0) return;
     if (execInChroot("gpg --import /lib/systemd/import-pubring.gpg") != 0) return;
     if (execInChroot("chattr +C /var/log/journal") != 0) return;
@@ -153,6 +153,6 @@ void install_soviet(const std::string& target_drive,
     if (execInChroot("dracut -H -I ' /usr/bin/nano ' --add-drivers ' vfat btrfs ' --strip /tmp/sov-initrd.img") != 0) return;
     if (execInChroot("/usr/lib/systemd/ukify build --linux=/usr/lib/modules/" + kernel_version + "/vmlinuz-soviet --initrd=/tmp/sov-initrd.img --uname=" + kernel_version + " --splash=/efi/logo-soviet-boot.bmp --cmdline=@/etc/kernel/cmdline --output=/efi/EFI/Linux/sovietlinux-" + build_id + "-initrd.efi") != 0) return;
 
-    execInChroot("bootctl random-seed");
+    execInChroot("bootctl install");
     std::cout << "Soviet Linux installation completed." << std::endl;
 }
