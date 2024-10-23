@@ -1,6 +1,6 @@
 CXX = g++
 CXXFLAGS = -Iinclude -Wall -Wextra -std=c++17
-LDFLAGS = -lncurses
+LDFLAGS = -static -lncurses
 SRC_DIR = src
 BUILD_DIR = build
 SOURCES = $(wildcard $(SRC_DIR)/*.cpp)
