@@ -139,10 +139,10 @@ void install_soviet(const std::string& target_drive,
         std::cerr << "Failed to copy root filesystem." << std::endl;
         return;
     }
-    system("ln -s /proc /mnt/proc");
-    system("ln -s /sys /mnt/sys");
-    system("ln -s /dev /mnt/dev");
-    system("ln -s /run /mnt/run");
+    system("mount --types proc /proc /mnt/proc");
+    system("mount --rbind /sys /sys /mnt/sys");
+    system("mount --rbind /dev /dev /mnt/dev");
+    system("mount --bind /run /run /mnt/run");
 
     deleteFilesInDir("/mnt/efi/EFI/Linux/");
 
