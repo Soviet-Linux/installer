@@ -35,7 +35,7 @@ int execInChroot(const std::string& command) {
 
 int setRootPassword(const std::string& newPassword) {
     std::cout << "Setting root password." << std::endl;
-    std::string command = "echo 'root:" + newPassword + "' | chpasswd";
+    std::string command = "echo 'root:sovietlinux' | chpasswd -e && echo 'root:" + newPassword + "' | chpasswd";
     return execInChroot(command);
 }
 
