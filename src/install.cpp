@@ -76,22 +76,28 @@ void install_soviet(const std::string& target_drive,
                     const std::string& hostname) {
     std::string kernel_version = getKernelVersion();
     std::string build_id = getVersionID("/mnt/etc/os-release");
-    partition_drive(target_drive);
-    create_boot(target_drive);
-    create_root(target_drive);
-    mount_root(target_drive);
-    mount_boot(target_drive);
-    system("cp -Rv /run/rootfsbase/* /mnt");
+
+    if (partition_drive(target_drive) != 0) return;
+    if (create_boot(target_drive) != 0) return;
+    if (create_root(target_drive) != 0) return;
+    if (mount_root(target_drive) != 0) return;
+    if (mount_boot(target_drive) != 0) return;
+
+    if (std::system("cp -Rv /run/rootfsbase/* /mnt") != 0) return;
     deleteFilesInDir("/mnt/efi/EFI/Linux/");
-    setupSystemd();
-    execInChroot("localectl set-keymap --no-convert " + keymap);
-    execInChroot("localectl set-locale LANG=" + locale);
-    setRootPassword(rootPassword);
-    execInChroot("hostnamectl set-hostname " + hostname);
-    execInChroot("systemd-machine-id-setup");
-    execInChroot("gpg --import /lib/systemd/import-pubring.gpg");
-    execInChroot("chattr +C /var/log/journal");
-    execInChroot("dracut -H -I ' /usr/bin/nano ' --add-drivers ' vfat btrfs ' --strip /tmp/sov-initrd.img");
-    execInChroot("/usr/lib/systemd/ukify build --linux=/usr/lib/modules/" + kernel_version + "/vmlinuz-soviet --initrd=/tmp/sov-initrd.img --uname=" + kernel_version + " --splash=/efi/logo-soviet-boot.bmp --cmdline=@/etc/kernel/cmdline --output=/efi/EFI/Linux/sovietlinux-" + build_id + "-initrd.efi");
+
+    if (setupSystemd() != 0) return;
+
+    if (execInChroot("localectl set-keymap --no-convert " + keymap) != 0) return;
+    if (execInChroot("localectl set-locale LANG=" + locale) != 0) return;
+    if (setRootPassword(rootPassword) != 0) return;
+    if (execInChroot("hostnamectl set-hostname " + hostname) != 0) return;
+    if (execInChroot("systemd-machine-id-setup") != 0) return;
+    if (execInChroot("gpg --import /lib/systemd/import-pubring.gpg") != 0) return;
+    if (execInChroot("chattr +C /var/log/journal") != 0) return;
+
+    if (execInChroot("dracut -H -I ' /usr/bin/nano ' --add-drivers ' vfat btrfs ' --strip /tmp/sov-initrd.img") != 0) return;
+    if (execInChroot("/usr/lib/systemd/ukify build --linux=/usr/lib/modules/" + kernel_version + "/vmlinuz-soviet --initrd=/tmp/sov-initrd.img --uname=" + kernel_version + " --splash=/efi/logo-soviet-boot.bmp --cmdline=@/etc/kernel/cmdline --output=/efi/EFI/Linux/sovietlinux-" + build_id + "-initrd.efi") != 0) return;
+
     execInChroot("bootctl random-seed");
 }
