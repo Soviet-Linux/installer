@@ -58,15 +58,13 @@ int mount_boot(std::string target) {
     const char* source = source_str.c_str();
     const char* mount_point = "/mnt/efi";
     const char* filesystemtype = "vfat";
-    const char* options = "defaults";
 
-    if (mount(source, mount_point, filesystemtype, 0, options) != 0) {
+    if (mount(source, mount_point, filesystemtype, 0, 0) != 0) {
         std::cerr << "Failed to mount: " << std::strerror(errno) << std::endl;
         return -1;
     }
 
-    std::cout << "Successfully mounted " << source << " at " << mount_point
-              << " with options: " << options << std::endl;
+    std::cout << "Successfully mounted " << source << " at " << mount_point << std::endl;
 
     return 0;
 }
