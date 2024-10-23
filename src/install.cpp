@@ -83,7 +83,7 @@ void install_soviet(const std::string& target_drive,
     create_root(target_drive);
     mount_root(target_drive);
     mount_boot(target_drive);
-    copyFiles("/run/rootfsbase/", "/mnt");
+    system("cp -Rv /run/rootfsbase/* /mnt");
     deleteFilesInDir("/mnt/efi/EFI/Linux/");
     setupSystemd();
     execInChroot("localectl set-keymap --no-convert " + keymap);
