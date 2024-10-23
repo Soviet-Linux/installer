@@ -29,6 +29,8 @@ int main() {
     std::string hostname = displayInputBox("Please enter the hostname:");
     clear();
     refresh();
+
+    endwin();
     // TODO: i have no idea why this prints so weirdly
     std::cout << "Drive: " << drive << std::endl;
     std::cout << "Locale: " << locale << std::endl;
