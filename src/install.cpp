@@ -153,7 +153,7 @@ void install_soviet(const std::string& target_drive,
     if (system(("echo 'root:" + rootPassword + "' | chpasswd -P /mnt").c_str()) != 0) return;
     if (execInChroot("echo "+ hostname +" > /etc/hostname") != 0) return;
     if (execInChroot("systemd-machine-id-setup") != 0) return;
-    if (execInChroot("gpg --import /lib/systemd/import-pubring.gpg") != 0) return;
+    //if (execInChroot("gpg --import /lib/systemd/import-pubring.gpg") != 0) return;
     if (execInChroot("chattr +C /var/log/journal") != 0) return;
 
     if (execInChroot("dracut -H -I ' /usr/bin/nano ' --add-drivers ' vfat btrfs ' --strip /tmp/sov-initrd.img") != 0) return;
