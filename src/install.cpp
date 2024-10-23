@@ -143,7 +143,7 @@ void install_soviet(const std::string& target_drive,
     if (setupSystemd() != 0) return;
 
     if (execInChroot("echo 'KEYMAP=" + keymap + "' > /etc/vconsole.conf") != 0) return;
-    if (execInChroot("echo 'LANG="+ locale + "' > /etc/locale.conf && locale-gen") != 0) return;
+    //if (execInChroot("echo 'LANG="+ locale + "' > /etc/locale.conf && locale-gen") != 0) return;
     if (setRootPassword(rootPassword) != 0) return;
     if (execInChroot("echo "+ hostname +" > /etc/hostname") != 0) return;
     if (execInChroot("systemd-machine-id-setup") != 0) return;
