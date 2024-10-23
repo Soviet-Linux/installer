@@ -115,27 +115,36 @@ void deleteFilesInDir(const std::string& dir_path) {
     }
 }
 
-std::vector<std::string> readLocaleGenFile(const std::string& filePath) {
-    std::ifstream file(filePath);
-    std::vector<std::string> lines;
+std::vector<std::string> getLocales() {
+    std::vector<std::string> locales;
+    std::string command = "localectl list-locales";
+    char buffer[128];
+    std::string result;
+
+    // Open a pipe to run the command and read the output
+    FILE* pipe = popen(command.c_str(), "r");
+    if (!pipe) {
+        std::cerr << "Error opening pipe for command: " << command << std::endl;
+        return locales;
+    }
+
+    // Read the output line by line
+    while (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
+        result += buffer;
+    }
+
+    pclose(pipe);
+
+    // Split the result by lines and add to locales vector
+    std::istringstream stream(result);
     std::string line;
-
-    if (!file.is_open()) {
-        std::cerr << "Error opening file: " << filePath << std::endl;
-        return lines;
-    }
-
-    while (std::getline(file, line)) {
-        if (!line.empty() && line[0] == '#') {
-            line.erase(0, 1);
-        }
+    while (std::getline(stream, line)) {
         if (!line.empty()) {
-            lines.push_back(line);
+            locales.push_back(line);
         }
     }
 
-    file.close();
-    return lines;
+    return locales;
 }
 
 std::vector<std::string> getKeymaps() {

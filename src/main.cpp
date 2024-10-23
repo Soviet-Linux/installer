@@ -7,7 +7,7 @@
 int main() {
     std::vector<std::string> drives = get_drives();
 
-    std::vector<std::string> locales = readLocaleGenFile("/etc/locale.gen");
+    std::vector<std::string> locales = getLocales();
     std::vector<std::string> keymaps = getKeymaps();
 
     std::string drive = pickString(drives, "Select a drive:");

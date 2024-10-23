@@ -17,7 +17,7 @@ std::vector<std::string> get_drives();
 
 void deleteFilesInDir(const std::string& dir_path);
 
-std::vector<std::string> readLocaleGenFile(const std::string& filePath);
+std::vector<std::string> getLocales();
 
 std::vector<std::string> getKeymaps();
 
