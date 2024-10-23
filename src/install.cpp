@@ -6,7 +6,7 @@
 
 int execInChroot(const std::string& command) {
     std::cout << "Executing in chroot: " << command << std::endl;
-    std::string fullCommand = "systemd-nspawn -D /mnt --as-pid2 bash -c \"" + command + "\"";
+    std::string fullCommand = "chroot /mnt bash -c \"" + command + "\"";
 
     std::array<char, 128> buffer;
     std::string result;
