@@ -129,6 +129,7 @@ void install_soviet(const std::string& target_drive,
     if (create_boot(target_drive) != 0) return;
     if (create_root(target_drive) != 0) return;
     if (mount_root(target_drive) != 0) return;
+    system("mkdir /mnt/efi");
     if (mount_boot(target_drive) != 0) return;
 
     std::cout << "Copying root filesystem." << std::endl;
