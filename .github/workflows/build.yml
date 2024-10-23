@@ -1,0 +1,30 @@
+name: Build and Upload
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up C++ environment
+        run: sudo apt-get install -y g++ libncurses5-dev libncursesw5-dev
+
+      - name: Build the project
+        run: |
+          make
+
+      - name: Upload binary artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: soviet-installer
+          path: build/soviet-installer
