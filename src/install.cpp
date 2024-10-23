@@ -149,10 +149,12 @@ void install_soviet(const std::string& target_drive,
     if (setupSystemd() != 0) return;
 
     if (execInChroot("echo 'KEYMAP=" + keymap + "' > /etc/vconsole.conf") != 0) return;
+    // TODO: Figure out how to set the locale in the root
     //if (execInChroot("echo 'LANG="+ locale + "' > /etc/locale.conf && locale-gen") != 0) return;
     if (system(("echo 'root:" + rootPassword + "' | chpasswd -P /mnt").c_str()) != 0) return;
     if (execInChroot("echo "+ hostname +" > /etc/hostname") != 0) return;
     if (execInChroot("systemd-machine-id-setup") != 0) return;
+    // TODO: idk why if this is even needed
     //if (execInChroot("gpg --import /lib/systemd/import-pubring.gpg") != 0) return;
     if (execInChroot("chattr +C /var/log/journal") != 0) return;
 
