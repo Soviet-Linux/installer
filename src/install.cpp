@@ -1,6 +1,18 @@
 #include "../include/install.hpp"
 #include "../include/utils.hpp"
 
+int execInChroot(const std::string& command) {
+    std::string fullCommand = "systemd-nspawn -D /mnt --as-pid2 bash -c \"" + command + "\"";
+
+    return std::system(fullCommand.c_str());
+}
+
+int setRootPassword(const std::string& newPassword) {
+    std::string command = "echo 'root:" + newPassword + "' | chpasswd";
+
+    return execInChroot(command);
+}
+
 int setupSystemd() {
     return std::system("systemd-firstboot --root=/mnt --setup-machine-id --root-shell=/bin/bash --force");
 }
@@ -56,6 +68,8 @@ void install_soviet(const std::string& target_drive,
                     const std::string& keymap,
                     const std::string& rootPassword,
                     const std::string& hostname) {
+    std::string kernel_version = getKernelVersion();
+    std::string build_id = getVersionID("/mnt/etc/os-release");
     partition_drive(target_drive);
     create_boot(target_drive);
     create_root(target_drive);
@@ -64,4 +78,14 @@ void install_soviet(const std::string& target_drive,
     copyFiles("/run/rootfsbase/", "/mnt");
     deleteFilesInDir("/mnt/efi/EFI/Linux/");
     setupSystemd();
+    execInChroot("localectl set-keymap --no-convert " + keymap);
+    execInChroot("localectl set-locale LANG=" + locale);
+    setRootPassword(rootPassword);
+    execInChroot("hostnamectl set-hostname " + hostname);
+    execInChroot("systemd-machine-id-setup");
+    execInChroot("gpg --import /lib/systemd/import-pubring.gpg");
+    execInChroot("chattr +C /var/log/journal");
+    execInChroot("dracut -H -I ' /usr/bin/nano ' --add-drivers ' vfat btrfs ' --strip /tmp/sov-initrd.img");
+    execInChroot("/usr/lib/systemd/ukify build --linux=/usr/lib/modules/" + kernel_version + "/vmlinuz-soviet --initrd=/tmp/sov-initrd.img --uname=" + kernel_version + " --splash=/efi/logo-soviet-boot.bmp --cmdline=@/etc/kernel/cmdline --output=/efi/EFI/Linux/sovietlinux-" + build_id + "-initrd.efi");
+    execInChroot("bootctl random-seed");
 }

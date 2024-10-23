@@ -2,6 +2,48 @@
 
 namespace fs = std::filesystem;
 
+std::string getVersionID(const std::string& filePath) {
+    std::ifstream file(filePath);
+    std::string line;
+
+    if (!file.is_open()) {
+        std::cerr << "Error: Unable to open file: " << filePath << std::endl;
+        return "";
+    }
+
+    while (std::getline(file, line)) {
+        if (line.find("VERSION_ID=") != std::string::npos) {
+            size_t pos = line.find("=");
+            if (pos != std::string::npos) {
+                return line.substr(pos + 1);
+            }
+        }
+    }
+
+    std::cerr << "Error: VERSION_ID not found in " << filePath << std::endl;
+    return "";
+}
+
+std::string getKernelVersion() {
+    std::ifstream versionFile("/proc/version");
+    std::string versionLine;
+
+    if (versionFile.is_open()) {
+        std::getline(versionFile, versionLine);
+        versionFile.close();
+
+        std::istringstream iss(versionLine);
+        std::string kernel, version, build;
+
+        iss >> kernel >> version >> build;
+
+        return version;
+    } else {
+        std::cerr << "Unable to open /proc/version" << std::endl;
+        return "";
+    }
+}
+
 void copyFiles(const fs::path& source, const fs::path& destination) {
     try {
         if (fs::exists(source) && fs::is_directory(source)) {

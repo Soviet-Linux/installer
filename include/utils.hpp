@@ -21,4 +21,8 @@ std::vector<std::string> readLocaleGenFile(const std::string& filePath);
 
 std::vector<std::string> getKeymaps();
 
+std::string getKernelVersion();
+
+std::string getVersionID(const std::string& filePath);
+
 #endif
