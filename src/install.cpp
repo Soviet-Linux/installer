@@ -3,8 +3,14 @@
 
 int execInChroot(const std::string& command) {
     std::string fullCommand = "systemd-nspawn -D /mnt --as-pid2 bash -c \"" + command + "\"";
+    int result = std::system(fullCommand.c_str());
 
-    return std::system(fullCommand.c_str());
+    if (result != 0) {
+        std::cerr << "Command failed with exit code: " << result << std::endl;
+        std::exit(result);  // Exit with the same error code returned by the command
+    }
+
+    return result;
 }
 
 int setRootPassword(const std::string& newPassword) {
@@ -18,15 +24,15 @@ int setupSystemd() {
 }
 
 int partition_drive(const std::string& target_drive) {
-    return std::system(("sgdisk -n 1:0:+512M -c 1:\"SOVIET-EFI\" -t 1:ef00 -n 2:0:0 -c 2:\"sovietlinux\" -t 2:8304 " + target_drive).c_str());
+    return std::system(("sgdisk -n 1:0:+512M -c 1:\"SOVIET-EFI\" -t 1:ef00 -n 2:0:0 -c 2:\"sovietlinux\" -t 2:8304 /dev/" + target_drive).c_str());
 }
 
 int create_boot(const std::string& target_drive) {
-    return std::system(("mkfs.vfat -F 32 -n SOVIET-EFI " + target_drive + "1").c_str());
+    return std::system(("mkfs.vfat -F 32 -n SOVIET-EFI /dev/" + target_drive + "1").c_str());
 }
 
 int create_root(const std::string& target_drive) {
-    return std::system(("mkfs.btrfs -L sovietlinux " + target_drive + "2").c_str());
+    return std::system(("mkfs.btrfs -L sovietlinux /dev/" + target_drive + "2").c_str());
 }
 
 int mount_root() {
