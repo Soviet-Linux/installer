@@ -159,6 +159,6 @@ void install_soviet(const std::string& target_drive,
     if (execInChroot("dracut -H -I ' /usr/bin/nano ' --add-drivers ' vfat btrfs ' --strip /tmp/sov-initrd.img") != 0) return;
     if (execInChroot("/usr/lib/systemd/ukify build --linux=/usr/lib/modules/" + kernel_version + "/vmlinuz-soviet --initrd=/tmp/sov-initrd.img --uname=" + kernel_version + " --splash=/efi/logo-soviet-boot.bmp --cmdline=@/etc/kernel/cmdline --output=/efi/EFI/Linux/sovietlinux-" + build_id + "-initrd.efi") != 0) return;
 
-    system("bootctl install --root=/mnt --esp-path=/mnt/efi");
+    system("bootctl install --root=/mnt");
     std::cout << "Soviet Linux installation completed." << std::endl;
 }
