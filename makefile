@@ -1,25 +1,21 @@
 CXX = g++
-
-CXXFLAGS = -Wall -Wextra -pedantic -std=c++17
-
+CXXFLAGS = -Iinclude -Wall -Wextra -std=c++17
+LDFLAGS = -lncurses
 SRC_DIR = src
 BUILD_DIR = build
+SOURCES = $(wildcard $(SRC_DIR)/*.cpp)
+OBJECTS = $(SOURCES:$(SRC_DIR)/%.cpp=$(BUILD_DIR)/%.o)
+BINARY = $(BUILD_DIR)/soviet-installer
 
-SRC_FILES = $(wildcard $(SRC_DIR)/*.cpp)
-
-TARGET = $(BUILD_DIR)/soviet-installer
-
-all: $(TARGET)
-
-$(TARGET): $(SRC_FILES)
+all: $(BINARY)
+$(BINARY): $(OBJECTS)
+	$(CXX) -o $@ $^ $(LDFLAGS)
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
 	@mkdir -p $(BUILD_DIR)
-	$(CXX) $(CXXFLAGS) $(SRC_FILES) -o $(TARGET) -lncurses
-
-run: $(TARGET)
-	$(TARGET)
-
-# Clean target
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+run: $(BINARY)
+	./$(BINARY)
 clean:
-	rm -f $(TARGET)
+	rm -rf $(BUILD_DIR)/*.o $(BINARY)
 
-.PHONY: all run clean
+.PHONY: all clean run
