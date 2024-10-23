@@ -33,11 +33,11 @@ std::string getKernelVersion() {
         versionFile.close();
 
         std::istringstream iss(versionLine);
-        std::string kernel, version, build;
+        std::string kernel, version, build, ignored;
 
-        iss >> kernel >> version >> build;
+        iss >> ignored >> ignored >> kernel;
 
-        return version;
+        return kernel;
     } else {
         std::cerr << "Unable to open /proc/version" << std::endl;
         return "";
