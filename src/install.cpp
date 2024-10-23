@@ -4,6 +4,8 @@
 #include <array>
 #include <memory>
 
+
+
 int execInChroot(const std::string& command) {
     std::cout << "Executing in chroot: " << command << std::endl;
     std::string fullCommand = "chroot /mnt bash -c \"" + command + "\"";
@@ -137,6 +139,10 @@ void install_soviet(const std::string& target_drive,
         std::cerr << "Failed to copy root filesystem." << std::endl;
         return;
     }
+    system("ln -s /proc /mnt/proc");
+    system("ln -s /sys /mnt/sys");
+    system("ln -s /dev /mnt/dev");
+    system("ln -s /run /mnt/run");
 
     deleteFilesInDir("/mnt/efi/EFI/Linux/");
 
